@@ -2,31 +2,22 @@
   (:require [clojure.string :as str]
             [clojure.java.io :as io]))
 
-(defn parse-line [line]
-  (let [[left right] (str/split line #"\s+")]
-    [(parse-long left) (parse-long right)]))
-
 (defn parse-input [input]
-  (->> input
-       str/split-lines
-       (map parse-line)))
-
-(defn calculate-distance [pairs]
-  (->> pairs
-       (map (fn [[left right]]
-              (Math/abs (- left right))))
-       (reduce +)))
+  (->> (str/split-lines input)
+       (map #(mapv parse-long (str/split % #"\s+")))))
 
 (defn solve-part1 [input]
-  (let [parsed-data (parse-input input)
-        left-numbers (map first parsed-data)
-        right-numbers (map second parsed-data)
-        sorted-left (sort left-numbers)
-        sorted-right (sort right-numbers)
-        pairs (map vector sorted-left sorted-right)]
-    (calculate-distance pairs)))
+  (let [data (parse-input input)
+        pairs (map vector 
+                  (sort (map first data))
+                  (sort (map second data)))]
+    (reduce + (map #(Math/abs (apply - %)) pairs))))
 
-(defn solve [opts]
-  (let [input-file (:input-file opts)
-        input (slurp (io/resource input-file))]
-    (solve-part1 input)))
+(defn solve-part2 [input]
+  (let [data (parse-input input)]
+    (->> (map first data)
+         (map #(* % (count (filter #{%} (map second data)))))
+         (reduce +))))
+
+(defn solve [] (solve-part1 (slurp (io/resource "day1.txt"))))
+(defn solve2 [] (solve-part2 (slurp (io/resource "day1.txt"))))

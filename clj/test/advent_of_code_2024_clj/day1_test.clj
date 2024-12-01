@@ -4,4 +4,8 @@
 
 (deftest part1-test
   (testing "Part 1 solution"
-    (is (= 1603498 (day1/solve {:input-file "day1.txt"})))))
+    (is (= 1603498 (day1/solve)))))
+
+(deftest part2-test
+  (testing "Part 2 solution"
+    (is (= 25574739 (day1/solve2)))))

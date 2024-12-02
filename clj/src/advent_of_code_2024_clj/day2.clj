@@ -1,38 +1,32 @@
 (ns advent-of-code-2024-clj.day2
-  (:require [clojure.string :as str]
-            [clojure.java.io :as io]))
-
-(defn parse-line [line]
-  (mapv #(Integer/parseInt %) (str/split (str/trim line) #"\s+")))
+  (:require [clojure.string :as str]))
 
 (defn parse-input [input]
-  (->> (str/split-lines input)
-       (mapv parse-line)))
+  (->> input
+       str/split-lines
+       (mapv (fn [line]
+               (->> (str/split (str/trim line) #"\s+")
+                    (mapv (fn [x] (Integer/parseInt x))))))))
 
-(defn valid-differences? [numbers]
-  (let [diffs (map - (rest numbers) numbers)]
-    (and (every? #(<= (Math/abs %) 3) diffs)
-         (every? #(>= (Math/abs %) 1) diffs)
+(defn valid-differences? [nums]
+  (let [diffs (map - (rest nums) nums)]
+    (and (every? #(<= 1 (Math/abs %) 3) diffs)
          (or (every? pos? diffs)
              (every? neg? diffs)))))
 
-(defn valid-with-dampener? [numbers]
-  (or (valid-differences? numbers)
-      (some valid-differences? 
-            (map #(vec (concat (subvec numbers 0 %) 
-                              (subvec numbers (inc %) (count numbers))))
-                 (range (count numbers))))))
-
 (defn solve-part1 [input]
-  (let [data (parse-input input)]
-    (->> data
-         (filter valid-differences?)
-         count)))
+  (->> input parse-input (filter valid-differences?) count))
 
 (defn solve-part2 [input]
-  (let [data (parse-input input)]
-    (->> data
-         (filter valid-with-dampener?)
-         count)))
+  (->> (parse-input input)
+       (filter (fn [nums]
+                 (or (valid-differences? nums)
+                     (some (fn [i]
+                             (valid-differences? 
+                              (into (subvec nums 0 i) 
+                                    (subvec nums (inc i)))))
+                           (range (count nums))))))
+       count))
 
-(solve-part1 (slurp (io/resource "day2.txt"))) ;; 411
+(solve-part1 (slurp (clojure.java.io/resource "day2.txt"))) ;; 411
+(solve-part2 (slurp (clojure.java.io/resource "day2.txt"))) ;; 465

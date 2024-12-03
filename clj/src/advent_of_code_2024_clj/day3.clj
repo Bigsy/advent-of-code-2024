@@ -12,32 +12,28 @@
                    (parse-long y))))
          (reduce + 0))))
 
- (defn solve-part2 [input]
-  (let [command-pattern #"(?:mul\((\d+),(\d+)\)|(?:(do|don't)\(\)))"
-        commands (->> (loop [matcher (re-matcher command-pattern input)
-                           result []]
-                      (if (.find matcher)
-                        (let [[_ x y cmd] (re-groups matcher)]
-                          (recur matcher
-                                (conj result
-                                      {:pos (.start matcher)
-                                       :cmd (if x
-                                             [:mul (parse-long x) (parse-long y)]
-                                             [(if (= cmd "do") :enable :disable)])})))
-                        result))
-                     (sort-by :pos))]
-    (:sum
-     (reduce (fn [{:keys [enabled? sum]} {:keys [cmd]}]
-              (let [[op & args] cmd]
-                (case op
-                  :mul {:enabled? enabled?
-                       :sum (if enabled?
-                             (+ sum (apply * args))
-                             sum)}
-                  :enable {:enabled? true :sum sum}
-                  :disable {:enabled? false :sum sum})))
-            {:enabled? true :sum 0}
-            commands))))
+(defn solve-part2 [input]
+  (let [commands (for [match (re-seq #"mul\((\d{1,3}),(\d{1,3})\)|do\(\)|don't\(\)" input)]
+                   (cond
+                     (= (first match) "do()") [:enable]
+                     (= (first match) "don't()") [:disable]
+                     :else [:mul (parse-long (nth match 1))
+                            (parse-long (nth match 2))]))]
+    (loop [cmds commands
+           enabled? true
+           sum 0]
+      (if (empty? cmds)
+        sum
+        (let [[op & args] (first cmds)]
+          (case op
+            :mul (recur (rest cmds)
+                        enabled?
+                        (if enabled?
+                          (+ sum (apply * args))
+                          sum))
+            :enable (recur (rest cmds) true sum)
+            :disable (recur (rest cmds) false sum)))))))
+
 (comment
   (solve-part1 (slurp (clojure.java.io/resource "day3.txt"))) ;; 167650499
   (solve-part2 (slurp (clojure.java.io/resource "day3.txt"))) ;; 95846796

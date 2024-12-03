@@ -1,0 +1,45 @@
+solve_part1 <- function(input) {
+  # Ensure input is a single string
+  input <- paste(input, collapse = "\n")
+  
+  # Extract all mul(x,y) patterns and calculate their products
+  pattern <- "mul\\((\\d+),(\\d+)\\)"
+  matches <- gregexpr(pattern, input, perl = TRUE)
+  str_matches <- regmatches(input, matches)[[1]]
+  
+  # Extract numbers and calculate sum
+  numbers <- gsub("mul\\((\\d+),(\\d+)\\)", "\\1 \\2", str_matches)
+  sum <- 0
+  for (pair in numbers) {
+    nums <- as.numeric(strsplit(pair, " ")[[1]])
+    sum <- sum + (nums[1] * nums[2])
+  }
+  return(sum)
+}
+
+solve_part2 <- function(input) {
+  # Ensure input is a single string
+  input <- paste(input, collapse = "\n")
+  
+  # Extract all commands
+  pattern <- "mul\\((\\d+),(\\d+)\\)|do\\(\\)|don't\\(\\)"
+  matches <- gregexpr(pattern, input, perl = TRUE)
+  commands <- regmatches(input, matches)[[1]]
+  
+  enabled <- TRUE
+  sum <- 0
+  
+  for (cmd in commands) {
+    if (cmd == "do()") {
+      enabled <- TRUE
+    } else if (cmd == "don't()") {
+      enabled <- FALSE
+    } else {
+      nums <- as.numeric(strsplit(gsub("mul\\((\\d+),(\\d+)\\)", "\\1 \\2", cmd), " ")[[1]])
+      if (enabled) {
+        sum <- sum + (nums[1] * nums[2])
+      }
+    }
+  }
+  return(sum)
+}

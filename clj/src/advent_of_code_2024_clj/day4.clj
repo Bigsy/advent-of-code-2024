@@ -20,10 +20,11 @@
                          (+ row (* i dy))
                          (+ col (* i dx))))]
     (when (every? some? chars)
-      (let [str-chars (apply str chars)]
-        (when (= pattern str-chars)
-          (println "Found pattern" pattern "at" row col "in direction" dx dy "chars:" str-chars))
-        (= pattern str-chars)))))
+      (= pattern (apply str chars)))))
+
+(defn check-mas-at-point [grid row col [dx dy]]
+  (or (check-direction grid row col [dx dy] "MAS")
+      (check-direction grid row col [dx dy] "SAM")))
 
 (defn count-pattern-at-position [grid row col pattern]
   (let [directions [[1 0]   ; right
@@ -45,26 +46,17 @@
            (count-pattern-at-position grid row col "XMAS"))
          (reduce +))))
 
-(defn check-mas-at-point [grid row col [dx dy]]
-  (check-direction grid row col [dx dy] "MAS"))
-
 (defn check-x-mas [grid row col]
   (let [center (get-char grid row col)]
     (when (= \A center)
-      (let [diagonals [[[1 1] [-1 -1]]   ; top-left to bottom-right AND bottom-right to top-left
-                       [[1 1] [1 -1]]     ; top-left to bottom-right AND bottom-left to top-right
-                       [[1 -1] [-1 -1]]   ; bottom-left to top-right AND bottom-right to top-left
-                       [[1 -1] [-1 1]]    ; bottom-left to top-right AND top-right to bottom-left
-                       [[-1 1] [1 1]]     ; top-right to bottom-left AND top-left to bottom-right
-                       [[-1 1] [1 -1]]    ; top-right to bottom-left AND bottom-left to top-right
-                       [[-1 -1] [1 1]]    ; bottom-right to top-left AND top-left to bottom-right
-                       [[-1 -1] [1 -1]]]  ; bottom-right to top-left AND bottom-left to top-right
+      (let [diagonals [[[1 1] [-1 -1]]    ; down-right + up-left
+                      [[-1 1] [1 -1]]]    ; down-left + up-right
             valid-pairs (for [[d1 d2] diagonals
-                             :when (and (check-mas-at-point grid row col d1)
-                                      (check-mas-at-point grid row col d2))]
-                         [d1 d2])]
-        (when (seq valid-pairs)
-          (println "Found X-MAS at" row col "with directions" (first valid-pairs)))
+                            :let [[dx1 dy1] d1
+                                 [dx2 dy2] d2]
+                            :when (and (check-mas-at-point grid row col d1)
+                                     (check-mas-at-point grid row col d2))]
+                        [d1 d2])]
         (count valid-pairs)))))
 
 (defn solve-part2 [input]
@@ -79,5 +71,4 @@
 
 (comment
   (solve-part1 (slurp (clojure.java.io/resource "day4.txt"))) ;; 2493
-  (solve-part2 (slurp (clojure.java.io/resource "day4.txt"))) ;; 
-  )
+  (solve-part2 (slurp (clojure.java.io/resource "day4.txt")))) 

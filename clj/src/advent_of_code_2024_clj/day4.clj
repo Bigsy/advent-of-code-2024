@@ -42,10 +42,29 @@
            (count-pattern-at-position grid row col "XMAS"))
          (reduce +))))
 
+(defn check-mas-pattern [grid row col [dx dy]]
+  (let [patterns #{"MAS" "SAM"}
+        chars (for [i (range 3)]
+                (get-char grid
+                         (+ row (* i dy))
+                         (+ col (* i dx))))]
+    (when (every? some? chars)
+      (let [pattern (apply str chars)]
+        (or (patterns pattern)
+            (patterns (apply str (reverse chars))))))))
 
+(defn check-x-mas [grid row col]
+  (when (= \A (get-char grid row col))
+    (let [diagonal1 (check-mas-pattern grid (dec row) (dec col) [1 1])
+          diagonal2 (check-mas-pattern grid (dec row) (inc col) [-1 1])]
+      (and diagonal1 diagonal2))))
 
 (defn solve-part2 [input]
-  )
+  (let [grid (parse-grid input)]
+    (->> (for [row (range 1 (dec (count grid)))
+               col (range 1 (dec (count (first grid))))]
+           (if (check-x-mas grid row col) 1 0))
+         (reduce +))))
 
 (comment
   (solve-part1 (slurp (clojure.java.io/resource "day4.txt"))) ;; 2493

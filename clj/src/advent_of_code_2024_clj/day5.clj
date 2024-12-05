@@ -1,71 +1,43 @@
-(ns advent-of-code-2024-clj.day4
+(ns advent-of-code-2024-clj.day5
   (:require
     [hashp.core]
     [clojure.string :as str]))
 
-(defn parse-grid [input]
-  (let [lines (str/split-lines input)]
-    (mapv vec lines)))
+(defn parse-rule [rule]
+  (let [[before after] (str/split rule #"\|")]
+    [(parse-long before) (parse-long after)]))
 
-(defn get-char [grid row col]
-  (when (and (>= row 0)
-             (< row (count grid))
-             (>= col 0)
-             (< col (count (first grid))))
-    (nth (nth grid row) col)))
+(defn parse-update [update]
+  (mapv parse-long (str/split update #",")))
 
-(defn check-direction [grid row col [dx dy] pattern]
-  (let [chars (for [i (range (count pattern))]
-                (get-char grid
-                          (+ row (* i dy))
-                          (+ col (* i dx))))]
-    (when (every? some? chars)
-      (= pattern (apply str chars)))))
+(defn parse-input [input]
+  (let [[rules-section updates-section] (str/split input #"\n\n")
+        rules (map parse-rule (str/split-lines rules-section))
+        updates (map parse-update (str/split-lines updates-section))]
+    {:rules rules :updates updates}))
 
-(defn count-pattern-at-position [grid row col pattern]
-  (let [directions [[1 0]   ; right
-                    [0 1]    ; down
-                    [1 1]    ; diagonal down-right
-                    [-1 1]   ; diagonal down-left
-                    [-1 0]   ; left
-                    [0 -1]   ; up
-                    [-1 -1]  ; diagonal up-left
-                    [1 -1]]] ; diagonal up-right
-    (->> directions
-         (filter #(check-direction grid row col % pattern))
-         count)))
+(defn valid-order? [rules pages]
+  (let [page-indices (into {} (map-indexed (fn [idx page] [page idx]) pages))]
+    (every? (fn [[before after]]
+              (or 
+               (not (contains? page-indices before))
+               (not (contains? page-indices after))
+               (< (get page-indices before) (get page-indices after))))
+            rules)))
+
+(defn middle-number [nums]
+  (nth nums (quot (count nums) 2)))
 
 (defn solve-part1 [input]
-  (let [grid (parse-grid input)]
-    (->> (for [row (range (count grid))
-               col (range (count (first grid)))]
-           (count-pattern-at-position grid row col "XMAS"))
+  (let [{:keys [rules updates]} (parse-input input)]
+    (->> updates
+         (filter #(valid-order? rules %))
+         (map middle-number)
          (reduce +))))
-
-(defn check-mas-pattern [grid row col [dx dy]]
-  (let [patterns #{"MAS" "SAM"}
-        chars (for [i (range 3)]
-                (get-char grid
-                         (+ row (* i dy))
-                         (+ col (* i dx))))]
-    (when (every? some? chars)
-      (let [pattern (apply str chars)]
-        (or (patterns pattern)
-            (patterns (apply str (reverse chars))))))))
-
-(defn check-x-mas [grid row col]
-  (when (= \A (get-char grid row col))
-    (let [diagonal1 (check-mas-pattern grid (dec row) (dec col) [1 1])
-          diagonal2 (check-mas-pattern grid (dec row) (inc col) [-1 1])]
-      (and diagonal1 diagonal2))))
 
 (defn solve-part2 [input]
-  (let [grid (parse-grid input)]
-    (->> (for [row (range 1 (dec (count grid)))
-               col (range 1 (dec (count (first grid))))]
-           (if (check-x-mas grid row col) 1 0))
-         (reduce +))))
+  )
 
 (comment
-  (solve-part1 (slurp (clojure.java.io/resource "day4.txt"))) ;; 2493
-  (solve-part2 (slurp (clojure.java.io/resource "day4.txt")))) ;;
+  (solve-part1 (slurp (clojure.java.io/resource "day5.txt"))) ;; 
+  (solve-part2 (slurp (clojure.java.io/resource "day5.txt")))) ;;

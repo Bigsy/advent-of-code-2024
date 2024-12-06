@@ -81,4 +81,4 @@
 
 (comment
   (solve-part1 (slurp (clojure.java.io/resource "day6.txt"))) ;;4515
-  (solve-part2 (slurp (clojure.java.io/resource "day6.txt"))))
+  (solve-part2 (slurp (clojure.java.io/resource "day6.txt")))) ;;1309

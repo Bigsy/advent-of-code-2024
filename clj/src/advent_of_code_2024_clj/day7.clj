@@ -4,43 +4,37 @@
     [clojure.string :as str]))
 
 (defn parse-line [line]
-  (let [[test-value numbers] (str/split line #":")
-        numbers (map parse-long (str/split (str/trim numbers) #"\s+"))]
-    [(parse-long test-value) numbers]))
+  (let [[target nums] (str/split line #":")
+        target (parse-long target)
+        nums (map parse-long (str/split (str/trim nums) #"\s+"))]
+    [target nums]))
 
-(defn parse-input [input]
-  (map parse-line (str/split-lines input)))
-
-
-(defn evaluate [numbers operators]
-  (reduce (fn [result [op num]]
-            (case op
-              \+ (+ result num)
-              \* (* result num)))
-          (first numbers)
-          (map vector operators (rest numbers))))
-
+(defn evaluate [nums operators]
+  (reduce
+    (fn [result [n op]]
+      ((case op \+ + \* *) result n))
+    (first nums)
+    (map vector (rest nums) operators)))
 
 (defn generate-operator-combinations [n]
   (if (zero? n)
     [[]]
-    (for [ops (generate-operator-combinations (dec n))
+    (for [combo (generate-operator-combinations (dec n))
           op [\+ \*]]
-      (conj ops op))))
+      (conj combo op))))
 
-
-(defn can-make-value? [target numbers]
-  (let [required-ops (dec (count numbers))
-        possible-ops (generate-operator-combinations required-ops)]
-    (some #(= target (evaluate numbers %)) possible-ops)))
+(defn can-equation-be-solved? [[target nums]]
+  (let [operator-count (dec (count nums))
+        operator-combinations (generate-operator-combinations operator-count)]
+    (some #(= target (evaluate nums %)) operator-combinations)))
 
 (defn solve-part1 [input]
-  (->> (parse-input input)
-       (filter (fn [[target numbers]] (can-make-value? target numbers)))
+  (->> input
+       str/split-lines
+       (map parse-line)
+       (filter can-equation-be-solved?)
        (map first)
        (reduce +)))
-
-
 
 (defn solve-part2 [input]
   )

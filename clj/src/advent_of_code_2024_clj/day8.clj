@@ -47,8 +47,8 @@
                     (not= p3 p2)
                     (let [d23 (distance-squared p2 p3)
                           d13 (distance-squared p1 p3)]
-                      (or (and (= d23 (* 4 d12)) (= d13 d12))  ; p3 is twice as far from p2
-                          (and (= d13 (* 4 d12)) (= d23 d12)))))] ; p3 is twice as far from p1
+                      (or (and (= d23 (* 4 d12)) (= d13 d12))  
+                          (and (= d13 (* 4 d12)) (= d23 d12)))))] 
       p3)))
 
 (defn solve-part1 [input]
@@ -69,8 +69,24 @@
     (count antinodes)))
 
 (defn solve-part2 [input]
-  )
+  (let [grid (parse-grid input)
+        antennas-by-freq (get-antennas-by-freq grid)
+        antinodes (reduce (fn [acc [freq positions]]
+                           (if (< (count positions) 2)
+                             acc
+                             (into acc
+                                   (for [p1 positions
+                                         p2 positions
+                                         :when (not= p1 p2)
+                                         x (range (:width grid))
+                                         y (range (:height grid))
+                                         :let [p3 [x y]]
+                                         :when (aligned? p1 p2 p3)]
+                                     p3))))
+                         #{}
+                         antennas-by-freq)]
+    (count antinodes)))
 
 (comment
-  (solve-part1 (slurp (clojure.java.io/resource "day8.txt"))) ;;
-  (solve-part2 (slurp (clojure.java.io/resource "day8.txt")))) ;;
+  (solve-part1 (slurp (clojure.java.io/resource "day8.txt"))) ;;308
+  (solve-part2 (slurp (clojure.java.io/resource "day8.txt")))) ;; 1147

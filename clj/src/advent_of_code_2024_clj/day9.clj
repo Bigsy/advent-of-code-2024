@@ -126,4 +126,4 @@
 
 (comment
   (solve-part1 (str/trim (slurp (clojure.java.io/resource "day9.txt")))) ;; 6415184586041
-  (solve-part2 (str/trim (slurp (clojure.java.io/resource "day9.txt"))))) ;;
+  (solve-part2 (str/trim (slurp (clojure.java.io/resource "day9.txt"))))) ;; 6415184586041

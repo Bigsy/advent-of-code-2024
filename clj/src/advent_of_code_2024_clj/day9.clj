@@ -72,9 +72,58 @@
         compacted-disk (compact-disk initial-disk)]
     (calculate-checksum compacted-disk)))
 
+(defn find-file-bounds [disk file-id]
+  (let [len (count disk)]
+    (loop [start nil
+           pos 0]
+      (cond
+        (>= pos len) [start (dec pos)]
+        (and (nil? start) (= (disk pos) file-id)) (recur pos (inc pos))
+        (and start (not= (disk pos) file-id)) [start (dec pos)]
+        :else (recur start (inc pos))))))
+
+(defn find-free-space [disk size]
+  (let [len (count disk)]
+    (loop [pos 0]
+      (when (< pos len)
+        (if (= (disk pos) ".")
+          (let [free-count (count (take-while #(= % ".") (subvec disk pos)))]
+            (if (>= free-count size)
+              pos
+              (recur (+ pos free-count))))
+          (recur (inc pos)))))))
+
+(defn move-whole-file [disk from to size]
+  (let [file-id (disk from)
+        result (transient disk)]
+    (dotimes [i size]
+      (assoc! result (+ from i) ".")
+      (assoc! result (+ to i) file-id))
+    (persistent! result)))
+
+(defn compact-disk-v2 [disk]
+  (let [file-ids (->> disk
+                      (filter number?)
+                      (distinct)
+                      (sort >))]
+    (loop [current disk
+           [file-id & rest-ids] file-ids]
+      (if (nil? file-id)
+        current
+        (let [[start end] (find-file-bounds current file-id)
+              file-size (inc (- end start))
+              free-pos (find-free-space current file-size)]
+          (if (and free-pos (< free-pos start))
+            (recur (move-whole-file current start free-pos file-size) rest-ids)
+            (recur current rest-ids)))))))
+
 (defn solve-part2 [input]
-  )
+  (let [lengths (parse-input (str/trim input))
+        initial-disk (create-disk-map lengths)
+        compacted-disk (compact-disk-v2 initial-disk)]
+    (calculate-checksum compacted-disk)))
+
 
 (comment
   (solve-part1 (str/trim (slurp (clojure.java.io/resource "day9.txt")))) ;; 6415184586041
-  (solve-part2 (slurp (clojure.java.io/resource "day9.txt")))) ;;
+  (solve-part2 (str/trim (slurp (clojure.java.io/resource "day9.txt"))))) ;;

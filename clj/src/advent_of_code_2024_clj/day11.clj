@@ -21,8 +21,25 @@
          first
          count)))
 
+(def count-stones
+  (memoize
+    (fn [stone blinks]
+      (cond
+        (zero? blinks) 1
+        (zero? stone)
+        (count-stones 1 (dec blinks))
+        (even? (count (str stone)))
+        (+ (count-stones (Long/parseLong (subs (str stone) 0 (/ (count (str stone)) 2))) (dec blinks))
+           (count-stones (Long/parseLong (subs (str stone) (/ (count (str stone)) 2))) (dec blinks)))
+        :else
+        (count-stones (* stone 2024) (dec blinks))))))
+
 (defn solve-part2 [input]
-  )
+  (let [initial-stones (->> (str/split input #" ")
+                            (map #(Long/parseLong %)))]
+    (->> initial-stones
+         (map #(count-stones % 75))
+         (reduce +))))
 
 (defn -main []
   (let [input (str/trim (slurp "resources/day11.txt"))]
@@ -30,4 +47,4 @@
 
 (comment
   (solve-part1 (str/trim (slurp (clojure.java.io/resource "day11.txt")))) ;; 217443
-  (solve-part2 (str/trim (slurp (clojure.java.io/resource "day11.txt")))))
+  (solve-part2 (str/trim (slurp (clojure.java.io/resource "day11.txt"))))) ;; 257246536026785

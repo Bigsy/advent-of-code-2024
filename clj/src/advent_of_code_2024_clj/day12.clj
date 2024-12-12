@@ -10,5 +10,5 @@
   )
 
 (comment
-  (solve-part1 (str/trim (slurp (clojure.java.io/resource "day12.txt")))) ;; 
+  (solve-part1 (str/trim (slurp (clojure.java.io/resource "day12.txt")))) ;; 1305965 too low
   (solve-part2 (str/trim (slurp (clojure.java.io/resource "day12.txt"))))) ;; 

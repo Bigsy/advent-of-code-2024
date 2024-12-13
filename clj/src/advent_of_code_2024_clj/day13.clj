@@ -34,4 +34,4 @@
 
 (comment
   (solve-part1 (str/trim (slurp (clojure.java.io/resource "day13.txt")))) ;; 39748 
-  (solve-part2 (str/trim (slurp (clojure.java.io/resource "day13.txt")))))
+  (solve-part2 (str/trim (slurp (clojure.java.io/resource "day13.txt"))))) ;; 20244 low

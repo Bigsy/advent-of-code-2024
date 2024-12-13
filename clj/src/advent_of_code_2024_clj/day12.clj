@@ -58,4 +58,4 @@
 
 (comment
   (solve-part1 (str/trim (slurp (io/resource "day12.txt")))) ;; 1352976
-  (solve-part2 (str/trim (slurp (io/resource "day12.txt"))))) ;; less 1305965 - more 154205
+  (solve-part2 (str/trim (slurp (io/resource "day12.txt"))))) ;; less 1305965 - more 154205 not 676488

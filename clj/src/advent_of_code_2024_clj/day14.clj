@@ -5,7 +5,7 @@
     [clojure.string :as str]))
 
 (defn solve-part1 [input]
-  ())
+  )
 
 
 

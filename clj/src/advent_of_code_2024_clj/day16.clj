@@ -84,4 +84,4 @@
 
 (comment
   (solve-part1 (str/trim (slurp (io/resource "day16.txt")))) ;; 90460
-  (solve-part2 (str/trim (slurp (io/resource "day16.txt"))))) ;;
+  (solve-part2 (str/trim (slurp (io/resource "day16.txt"))))) ;; 8767 high

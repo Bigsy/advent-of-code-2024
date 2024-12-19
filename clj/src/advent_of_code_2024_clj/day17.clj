@@ -56,4 +56,4 @@
 
 (comment
   (solve-part1 (str/trim (slurp (io/resource "day17.txt")))) ;; 1,5,7,4,1,6,0,3,0
-  (solve-part2 (str/trim (slurp (io/resource "day17.txt"))))) ;;
+  (solve-part2 (str/trim (slurp (io/resource "day17.txt

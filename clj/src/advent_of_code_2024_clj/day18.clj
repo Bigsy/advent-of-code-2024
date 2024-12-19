@@ -38,16 +38,29 @@
            (into visited next-positions)))))))
 
 (defn solve-part1 [input]
-
-
   (let [corrupted (parse-input input)
         max-size 71  ; Grid is 71x71 (0 to 70 inclusive)
         start [0 0]
         end [70 70]]
     (shortest-path start end corrupted max-size)))
 
-(defn solve-part2 [input])
+(defn first-blocking-byte [input]
+  (let [coords (map parse-coords (str/split-lines input))
+        max-size 71
+        start [0 0]
+        end [70 70]]
+    (loop [i 0
+           corrupted #{}]
+      (let [new-corrupted (conj corrupted (nth coords i))
+            path-exists? (shortest-path start end new-corrupted max-size)]
+        (if (nil? path-exists?)
+          (nth coords i)  ; Return the coordinates that blocked the path
+          (recur (inc i) new-corrupted))))))
+
+(defn solve-part2 [input]
+  (let [[x y] (first-blocking-byte input)]
+    (str x "," y)))
 
 (comment
   (solve-part1 (str/trim (slurp (io/resource "day18.txt")))) ;; 334
-  (solve-part2 (str/trim (slurp (io/resource "day18.txt")))))
+  (solve-part2 (str/trim (slurp (io/resource "day18.txt"))))) ;; 20,12

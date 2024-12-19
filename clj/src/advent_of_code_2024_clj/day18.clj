@@ -1,4 +1,4 @@
-(ns advent-of-code-2024-clj.day17
+(ns advent-of-code-2024-clj.day18
   (:require
    [clojure.java.io :as io]
    [hashp.core]

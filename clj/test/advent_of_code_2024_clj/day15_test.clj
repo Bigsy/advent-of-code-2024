@@ -37,4 +37,8 @@ v^^>>><<^^<>>^v^<v^vv<>v^<<>^<^v^v><^<<<><<^<v><v<>vv>>v><v^<vv<>v^<<^")
 
 (deftest part1-test
   (testing "Example input gives correct result"
-    (is (= 10092 (solve-part1 example-input1)))))
+    (is (= 2028 (solve-part1 example-input1)))))
+
+(deftest part2-test
+  (testing "Example input gives correct result"
+    (is (= 10092 (solve-part1 example-input2)))))

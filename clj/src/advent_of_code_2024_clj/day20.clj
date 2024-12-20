@@ -65,4 +65,4 @@
 
 (comment
   (solve-part1 (str/trim (slurp (io/resource "day20.txt")))) ;; 1343
-  (solve-part2 (str/trim (slurp (io/resource "day20.txt"))))) ;;
+  (solve-part2 (str/trim (slurp (io/resource "day20.txt"))))) ;; 2070 low

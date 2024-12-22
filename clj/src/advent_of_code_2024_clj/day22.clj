@@ -11,5 +11,5 @@
   )
 
 (comment
-  (solve-part1 (str/trim (slurp (io/resource "day21.txt")))) ;; 
-  (solve-part2 (str/trim (slurp (io/resource "day21.txt"))))) ;;
+  (solve-part1 (str/trim (slurp (io/resource "day22.txt")))) ;; 
+  (solve-part2 (str/trim (slurp (io/resource "day22.txt"))))) ;;

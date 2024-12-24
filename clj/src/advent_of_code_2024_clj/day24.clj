@@ -11,5 +11,5 @@
   )
 
 (comment
-  (solve-part1 (str/trim (slurp (io/resource "day24.txt")))) ;; 3890920758797 low
+  (solve-part1 (str/trim (slurp (io/resource "day24.txt")))) ;; 3890920758797 low 66120827724944 high
   (solve-part2 (str/trim (slurp (io/resource "day24.txt"))))) ;;

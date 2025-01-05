@@ -11,5 +11,5 @@
   )
 
 (comment
-  (solve-part1 (str/trim (slurp (io/resource "day21.txt")))) ;; 142884 low 274816 high
+  (solve-part1 (str/trim (slurp (io/resource "day21.txt")))) ;; 142884 low 274816 high not 216106
   (solve-part2 (str/trim (slurp (io/resource "day21.txt"))))) ;;

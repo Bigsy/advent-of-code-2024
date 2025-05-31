@@ -158,8 +158,28 @@
     (reduce + (map solve-code codes))))
 
 (defn solve-part2 [input]
-  )
+  (let [codes (str/split-lines input)]
+    (reduce + (map (fn [code]
+                     (reset! memo-expand {})
+                     (let [chars (str \A code)
+                           ;; Find all possible sequences for the numeric keypad
+                           all-numeric-sequences
+                           (reduce (fn [sequences i]
+                                     (let [from-char (nth chars i)
+                                           to-char (nth chars (inc i))
+                                           move-seqs (get-move-sequence numeric-keypad from-char to-char)]
+                                       (for [seq sequences
+                                             moves move-seqs]
+                                         (vec (concat seq moves [\A])))))
+                                   [[]]
+                                   (range (dec (count chars))))
+                           ;; Find the minimum length after full expansion with 25 levels
+                           min-length (apply min
+                                             (map #(expand-length % 25) all-numeric-sequences))
+                           numeric-part (Long/parseLong (re-find #"\d+" code))]
+                       (* min-length numeric-part)))
+                   codes))))
 
 (comment
   (solve-part1 (str/trim (slurp (io/resource "day21.txt")))) ;; 237342
-  (solve-part2 (str/trim (slurp (io/resource "day21.txt"))))) ;;
+  (solve-part2 (str/trim (slurp (io/resource "day21.txt"))))) ;; 294585598101704
